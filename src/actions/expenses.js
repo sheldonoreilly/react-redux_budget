@@ -16,7 +16,7 @@ export const startAddExpense = (expenseData = {}) => {
 		const expense = { description, note, amount, createdAt };
 
 		//set to firebase ...
-		database
+		return database
 			.ref("expenses")
 			.push(expense)
 			.then(ref => {
