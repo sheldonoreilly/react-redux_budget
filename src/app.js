@@ -9,7 +9,7 @@ import getVisibleExpenses from "./selectors/expenses";
 import "normalize.css/normalize.css";
 import "./styles/styles.scss";
 import "react-dates/lib/css/_datepicker.css";
-import "./firebase/firebase";
+import { firebase } from "./firebase/firebase";
 
 const store = configureStore();
 
@@ -23,4 +23,16 @@ ReactDOM.render(<p>Loading...</p>, document.getElementById("app"));
 
 store.dispatch(startSetExpenses()).then(() => {
 	ReactDOM.render(jsx, document.getElementById("app"));
+});
+
+//.auth() returns  all auth related functionality
+//.onAuthStateChanged(user) flashes when user has gone from unauthed to vice-versa
+firebase.auth().onAuthStateChanged(user => {
+	if (user) {
+		//user has logged in
+		console.log("Log in");
+	} else {
+		//user has logged out
+		console.log("Log out");
+	}
 });
