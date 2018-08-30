@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import AppRouter from "./routers/AppRouter";
+import AppRouter, { history } from "./routers/AppRouter";
 import configureStore from "./store/configureStore";
 import { startSetExpenses } from "./actions/expenses";
-import { setTextFilter } from "./actions/filters";
+import { login, logout } from "./actions/auth";
 import getVisibleExpenses from "./selectors/expenses";
 import "normalize.css/normalize.css";
 import "./styles/styles.scss";
@@ -19,20 +19,36 @@ const jsx = (
 	</Provider>
 );
 
-ReactDOM.render(<p>Loading...</p>, document.getElementById("app"));
+let hasRendered = false;
+const renderApp = () => {
+	if (!hasRendered) {
+		ReactDOM.render(jsx, document.getElementById("app"));
+		hasRendered = true;
+	}
+};
 
-store.dispatch(startSetExpenses()).then(() => {
-	ReactDOM.render(jsx, document.getElementById("app"));
-});
+ReactDOM.render(<p>Loading...</p>, document.getElementById("app"));
 
 //.auth() returns  all auth related functionality
 //.onAuthStateChanged(user) flashes when user has gone from unauthed to vice-versa
 firebase.auth().onAuthStateChanged(user => {
 	if (user) {
+		//dispatch the users login action
+		store.dispatch(login(user.uid));
 		//user has logged in
-		console.log("Log in");
+		//we need to fetch the loggedin users expenses
+		store.dispatch(startSetExpenses()).then(() => {
+			renderApp();
+			//we only redirect if current location is login page
+			if (history.location.pathname === "/") {
+				history.push("/dashboard");
+			}
+		});
 	} else {
 		//user has logged out
-		console.log("Log out");
+		store.dispatch(logout());
+
+		renderApp();
+		history.push("/");
 	}
 });

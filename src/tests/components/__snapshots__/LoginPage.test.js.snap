@@ -2,9 +2,6 @@
 
 exports[`should correctly render LoginPage 1`] = `
 <div>
-  <h4>
-    Login
-  </h4>
   <button>
     Login
   </button>
